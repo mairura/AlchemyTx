@@ -9,7 +9,7 @@ async function main() {
     console.log(nonce);
 
     const transaction = {
-        'to': '0x31B98D14007bDEe637298086988A0bBd31184523',
+        'to': '0x31B98D14007bDEe637298086988A0bBd31184523', 
         'value': 10,
         'gas': 30000,
         'maxPriorityFeePerGas': 1000000108,
