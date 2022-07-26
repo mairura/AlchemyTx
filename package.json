@@ -1,0 +1,17 @@
+{
+  "name": "alchemy",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon src/sendTx.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@alch/alchemy-web3": "^1.4.6",
+    "dotenv": "^16.0.1",
+    "nodemon": "^2.0.19"
+  }
+}
