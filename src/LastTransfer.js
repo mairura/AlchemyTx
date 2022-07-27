@@ -1,28 +1,53 @@
-const { initializeAlchemy, getAssetTransfers } = require("@alch/alchemy-sdk");
-
-const alchemy = initializeAlchemy();
-
-const getTransfers = getAssetTransfers(alchemy, {
-    fromBlock: "0x0",
-    toBlock: "latest",
-    contractAddress: ["0xfe9938d3A0a888A07B9820AC5d68dddEf5c03cC7"],
-    excludeZeroValue: true,
-    category: ["erc721"]
-});
 //Getting all transfers
 const historyTransfers = async () => {
+    const { initializeAlchemy, getAssetTransfers } = require("@alch/alchemy-sdk");
+    // const { createAlchemyWeb3 } = require("@alch/alchemy-web3");
+
+    const alchemy = initializeAlchemy();
+
+    const getTransfers = getAssetTransfers(alchemy, {
+        fromBlock: "0x0",
+        toBlock: "latest",
+        contractAddresses: ["0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d"],
+        excludeZeroValue: true,
+        category: ["erc721"]
+    });
+    //Pagekey represents the available results unpon response - how many responses are available
     const firstPage = await getTransfers;
-
-    //Getting the length of trasfers
-    const firstPageLength = firstPage.transfers.length;
-    //Printing the last transfer
-    console.log(firstPage.transfers[firstPageLength - 1]);
-
     let pageKey = firstPage.pageKey;
-    if(pageKey) {
-        console.log("Page Key: " + pageKey);
-    }else{
-        console.log("Page Key: none");
+    try{
+        if(pageKey) {
+            let counter = 0;
+            while(pageKey) {
+                const nextKey = getAssetTransfers(alchemy, {
+                    fromBlock: "0x0",
+                    toBlock: "latest",
+                    contractAddresses: ["0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d"],
+                    excludeZeroValue: true,
+                    category: ["erc721"],
+                    pageKey: pageKey.toString(),
+                });
+                const nextPage = await nextKey;
+                pageKey = nextPage.pageKey;
+                if(pageKey) {
+                    counter += 1;
+                    console.log("Request #" + counter + " made!");
+                    continue;
+                }else{
+                    const nextPageLength = nextPage.transfers.length;
+                    const transferCount = counter * 1000 + nextPageLength;
+                    console.log(transferCount);
+                    console.log("Last BAYC token transfer(#" + transferCount + "):");
+                    console.log(nextPage.transfers[nextPageLength - 1]);
+                    break;
+                }
+            }
+        }else if(pageKey === undefined){
+            const firstPageLength = firstPage.transfers.length;
+            console.log(firstPage.transfers[firstPageLength - 1])
+        }
+    }catch(err){
+        console.log("Something went wrong. Try Again!", + err);
     }
 }
 
